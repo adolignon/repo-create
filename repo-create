@@ -1,0 +1,43 @@
+# Chemin vers le fichier Excel
+$excelFilePath = CCheminversTonFichier.xlsx
+
+# Nom de la feuille Excel
+$worksheetName = Planning
+
+# Chargement de l'assembly pour interagir avec Excel
+Add-Type -Path CCheminversMicrosoft.Office.Interop.Excel.dll
+
+# Création d'une instance d'Excel
+$excel = New-Object -ComObject Excel.Application
+
+# Désactivation de l'affichage de l'interface Excel
+$excel.Visible = $false
+
+# Ouverture du fichier Excel
+$workbook = $excel.Workbooks.Open($excelFilePath)
+
+# Sélection de la feuille de travail
+$worksheet = $workbook.Sheets.Item($worksheetName)
+
+# Obtenir la plage de données dans les colonnes B et R
+$rangeB = $worksheet.Range(B1, B + $worksheet.UsedRange.Rows.Count)
+$rangeR = $worksheet.Range(R1, R + $worksheet.UsedRange.Rows.Count)
+
+# Parcours de chaque cellule dans les colonnes B et R
+foreach ($row in $rangeB.Rows) {
+    $cellB = $row.Cells.Item(1)
+    $cellR = $rangeR.Cells.Item($row.Row)
+    
+    $cellBValue = $cellB.Value2
+    $cellRValue = $cellR.Value2
+    
+    if ($cellBValue -eq Socle Commun -and $cellRValue) {
+        # Création d'un répertoire pour chaque valeur de cellule non vide
+        $directoryPath = CCheminvers$cellRValue
+        New-Item -ItemType Directory -Path $directoryPath -ErrorAction SilentlyContinue
+    }
+}
+
+# Fermeture du fichier Excel et libération des ressources
+$workbook.Close($false)
+$excel.Quit()
